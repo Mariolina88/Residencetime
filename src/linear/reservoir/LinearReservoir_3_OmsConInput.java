@@ -127,7 +127,7 @@ public class LinearReservoir_3_OmsConInput extends JGTModel {
 
 	public DateTime array[] ;
 
-
+	double timeIntegral;
 
 	public void process() throws Exception {
 		DateTimeFormatter formatter = DateTimeFormat.forPattern(
@@ -240,9 +240,9 @@ public class LinearReservoir_3_OmsConInput extends JGTModel {
 			}
 
 
-			double aaa= calcDischarge(precipitation,discharge,ET);
+			double pdf= compute(precipitation,discharge,ET);
 
-			outHMQout.put(id, new double[]{aaa});
+			outHMQout.put(id, new double[]{pdf});
 
 			writer.inData = outHMQout;
 			writer.writeNextLine();
@@ -257,32 +257,31 @@ public class LinearReservoir_3_OmsConInput extends JGTModel {
 
 
 
-	public double computeIntegral (){
-		
-		SimpsonIntegrator simpson = new SimpsonIntegrator();
-		TimeStepIntegrator timef = new TimeStepIntegrator();
-		double timeIntegral = simpson.integrate(10, timef, tin, tex);		
-		return id;
-	}
+	  public double computeIntegral (int tin, int tex){	
+			SimpsonIntegrator simpson = new SimpsonIntegrator();
+			TimeStepIntegrator timef = new TimeStepIntegrator();
+			this.timeIntegral = simpson.integrate(10, timef, tin, tex);		
+			return timeIntegral;
+		}
 
 
-	public double calcDischarge(double J, double Q, double ET) throws IOException {
-			FirstOrderIntegrator dp853 = new DormandPrince853Integrator(1.0e-8,1000.0, 1.0e-10, 1.0e-10);
-			FirstOrderDifferentialEquations ode = new EquazioneDifferenziale(a, b, J,ET);
-			// condizioni iniziali e finali
-			double[] y = new double[] { 0.0, 10000.0 };
-			dp853.integrate(ode, 0.0, y, tex-tin, y);
-			S=y[0];
-			Q = a * (Math.pow(S, b));
-			System.out.print(Q);
-			double p = Math.exp(-(Q+ET) / S );		
-			double theta = ((Q / S) * computeIntegral()) * p;
-			double pT = Q / (theta * S) * p;
-			double pET = ET / ((1-theta) * S) * p;
-			double Qout = J * pT*computeIntegral();					
-			return Qout;
+		public double compute(double J, double Q, double ET) throws IOException {
+				FirstOrderIntegrator dp853 = new DormandPrince853Integrator(1.0e-8,1000.0, 1.0e-10, 1.0e-10);
+				FirstOrderDifferentialEquations ode = new EquazioneDifferenziale(a, b, J,ET);
+				// condizioni iniziali e finali
+				double[] y = new double[] { 0.0, 10000.0 };
+				dp853.integrate(ode, 0.0, y, tex-tin, y);
+				S=y[0];
+				Q = a * (Math.pow(S, b));
+				System.out.print(Q);
+				double p = Math.exp(-(Q+ET) / S );		
+				double theta = ((Q / S) * timeIntegral) * p;
+				double pT = Q / (theta * S) * p;
+				double pET = ET / ((1-theta) * S) * p;
+				double Qout = J * pT*timeIntegral;					
+				return Qout;
 
-	}
+		}
 
 
 
