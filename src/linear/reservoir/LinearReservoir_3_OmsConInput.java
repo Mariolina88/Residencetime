@@ -68,20 +68,6 @@ public class LinearReservoir_3_OmsConInput extends JGTModel {
 	@In
 	public String inPathToET = null;
 
-	/*
-	@Description("Path to the net radiation file in input.")
-	@In
-	public String inPathToNetRadiation = null;
-
-	@Description("Path to the air temperature file in input.")
-	@In
-	public String inPathToAirTemperature = null;
-
-	@Description("Path to the pressure file in input.")
-	@In
-	public String inPathToPressure = null;
-	 */
-
 	public HashMap<Integer, double[]> precipvalues;
 
 	public HashMap<Integer, double[]> dischargevalues;
@@ -127,7 +113,6 @@ public class LinearReservoir_3_OmsConInput extends JGTModel {
 
 	public DateTime array[] ;
 
-	double timeIntegral;
 
 	public void process() throws Exception {
 		DateTimeFormatter formatter = DateTimeFormat.forPattern(
@@ -257,28 +242,23 @@ public class LinearReservoir_3_OmsConInput extends JGTModel {
 
 
 
-	  public double computeIntegral (int tin, int tex){	
-			SimpsonIntegrator simpson = new SimpsonIntegrator();
-			TimeStepIntegrator timef = new TimeStepIntegrator();
-			this.timeIntegral = simpson.integrate(10, timef, tin, tex);		
-			return timeIntegral;
-		}
-
-
 		public double compute(double J, double Q, double ET) throws IOException {
 				FirstOrderIntegrator dp853 = new DormandPrince853Integrator(1.0e-8,1000.0, 1.0e-10, 1.0e-10);
 				FirstOrderDifferentialEquations ode = new EquazioneDifferenziale(a, b, J,ET);
 				// condizioni iniziali e finali
 				double[] y = new double[] { 0.0, 10000.0 };
 				dp853.integrate(ode, 0.0, y, tex-tin, y);
+				SimpsonIntegrator simpson = new SimpsonIntegrator();
+				TimeStepIntegrator timef = new TimeStepIntegrator();
+				double timeIntegral = simpson.integrate(10, timef, tin, tex);	
 				S=y[0];
 				Q = a * (Math.pow(S, b));
 				System.out.print(Q);
-				double p = Math.exp(-(Q+ET) / S );		
-				double theta = ((Q / S) * timeIntegral) * p;
+				double p = Math.exp(-(Q+ET) / S *timeIntegral);		
+				double theta = (Q / S) * timeIntegral * p;
 				double pT = Q / (theta * S) * p;
 				double pET = ET / ((1-theta) * S) * p;
-				double Qout = J * pT*timeIntegral;					
+				double Qout = J * pT*timeIntegral*theta;					
 				return Qout;
 
 		}
