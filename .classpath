@@ -200,7 +200,7 @@
 	<classpathentry kind="lib" path="/Users/marialaura/Downloads/jgrasstools-0/jgt-modules-0.7.7-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="/Users/marialaura/Downloads/joda-time-2.4/joda-time-2.4-sources.jar"/>
 	<classpathentry kind="lib" path="/Users/marialaura/Downloads/joda-time-2.4/joda-time-2.4-javadoc.jar"/>
-	<classpathentry kind="lib" path="/Users/marialaura/Downloads/joda-time-2.4/joda-time-2.4.jar"/>
+	<classpathentry kind="lib" path="/Users/marialaura/Downloads/joda-time-2.4/joda-time-2.4.jar" sourcepath="/Users/marialaura/.m2/repository/joda-time/joda-time/2.4/joda-time-2.4-sources.jar"/>
 	<classpathentry kind="lib" path="/Users/marialaura/Downloads/geotools-12-2.2/gt-data-12.2.jar"/>
 	<classpathentry kind="lib" path="/Users/marialaura/Downloads/geotools-12-2.2/gt-property-ng-12.2.jar"/>
 	<classpathentry kind="lib" path="/Users/marialaura/Downloads/geotools-12-2.2/gt-main-12.2.jar"/>

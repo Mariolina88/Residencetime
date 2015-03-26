@@ -19,7 +19,7 @@ public class LinearReservoir_1_conMAin {
 
 	@Description("Exit time")
 	@In
-	public static double tex = 20;
+	public static double tex = 2;
 
 	@Description("Travel time")
 	@In
@@ -50,13 +50,14 @@ public class LinearReservoir_1_conMAin {
 
 
 	public static void main(String[] args) {
-		FirstOrderIntegrator dp853 = new DormandPrince853Integrator(1.0e-8,
-				1000.0, 1.0e-10, 1.0e-10);
+		FirstOrderIntegrator dp853 = new DormandPrince853Integrator(1.0e-3,
+				10.0, 1.0e-3, 1.0e-3);
 		FirstOrderDifferentialEquations ode = new EquazioneDifferenziale(a, b,
 				J,ET);
 		// condizioni iniziali e finali
-		double[] y = new double[] { 0.0, 10000.0 };
-		dp853.integrate(ode, 0.0, y, t, y);
+		double[] y = new double[] { 10.0, 100.0 };
+		dp853.integrate(ode, 1, y, 10, y);
+		
 		S = y[0];
 		Q = a * (Math.pow(S, b));
 		System.out.println("S at time " + t + " is: " + S);

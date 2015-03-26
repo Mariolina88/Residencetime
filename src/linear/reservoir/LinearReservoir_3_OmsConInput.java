@@ -93,7 +93,7 @@ public class LinearReservoir_3_OmsConInput extends JGTModel {
 
 	@Description("Parameter of linear Reservoir")
 	@In
-	public static double b = 2;
+	public static double b = 1;
 
 	@Description("Id field in the csv file")
 	@In
@@ -246,19 +246,23 @@ public class LinearReservoir_3_OmsConInput extends JGTModel {
 				FirstOrderIntegrator dp853 = new DormandPrince853Integrator(1.0e-8,1000.0, 1.0e-10, 1.0e-10);
 				FirstOrderDifferentialEquations ode = new EquazioneDifferenziale(a, b, J,ET);
 				// condizioni iniziali e finali
-				double[] y = new double[] { 0.0, 10000.0 };
+				double[] y = new double[] { 4.0, 100.0 };
 				dp853.integrate(ode, 0.0, y, tex-tin, y);
 				SimpsonIntegrator simpson = new SimpsonIntegrator();
 				TimeStepIntegrator timef = new TimeStepIntegrator();
 				double timeIntegral = simpson.integrate(10, timef, tin, tex);	
 				S=y[0];
 				Q = a * (Math.pow(S, b));
-				System.out.print(Q);
-				double p = Math.exp(-(Q+ET) / S *timeIntegral);		
-				double theta = (Q / S) * timeIntegral * p;
+				double rapp=(Q+ET)/S;
+				
+				System.out.print(Q+ "\t");				
+				double p = Math.exp(-timeIntegral*(Q+ET) / S );
+				double S1= timeIntegral*p*J;
+				double theta = timeIntegral *(Q / S) *p  ;
 				double pT = Q / (theta * S) * p;
 				double pET = ET / ((1-theta) * S) * p;
-				double Qout = J * pT*timeIntegral*theta;					
+				double Qout = J*pT*timeIntegral*theta;
+				System.out.print(Qout+ "\t");
 				return Qout;
 
 		}

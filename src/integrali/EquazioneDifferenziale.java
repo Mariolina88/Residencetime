@@ -27,8 +27,7 @@ public class EquazioneDifferenziale implements FirstOrderDifferentialEquations{
 		}
 		public void computeDerivatives(double t, double[] y, double[] yDot)
 				throws MaxCountExceededException, DimensionMismatchException {
-			Q=a*(Math.pow(y[0],b));
-			yDot[0]=J-Q-ET;
+			yDot[0]=J-a*(Math.pow(y[0],b))-ET;
 		}
 	}
 	
