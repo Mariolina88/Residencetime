@@ -55,8 +55,8 @@ public class LinearReservoir_1_conMAin {
 		FirstOrderDifferentialEquations ode = new EquazioneDifferenziale(a, b,
 				J,ET);
 		// condizioni iniziali e finali
-		double[] y = new double[] { 10.0, 100.0 };
-		dp853.integrate(ode, 1, y, 10, y);
+		double[] y = new double[] { 0.0, 10000.0 };
+		dp853.integrate(ode, 0, y, 1, y);
 		
 		S = y[0];
 		Q = a * (Math.pow(S, b));

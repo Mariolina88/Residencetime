@@ -1,27 +1,4 @@
 package linear.reservoir;
-import static org.jgrasstools.gears.libs.modules.JGTConstants.isNovalue;
-import static org.jgrasstools.hortonmachine.i18n.HortonMessages.OMSPRESTEYTAYLORETPMODEL_AUTHORCONTACTS;
-import static org.jgrasstools.hortonmachine.i18n.HortonMessages.OMSPRESTEYTAYLORETPMODEL_AUTHORNAMES;
-import static org.jgrasstools.hortonmachine.i18n.HortonMessages.OMSPRESTEYTAYLORETPMODEL_DESCRIPTION;
-import static org.jgrasstools.hortonmachine.i18n.HortonMessages.OMSPRESTEYTAYLORETPMODEL_KEYWORDS;
-import static org.jgrasstools.hortonmachine.i18n.HortonMessages.OMSPRESTEYTAYLORETPMODEL_LABEL;
-import static org.jgrasstools.hortonmachine.i18n.HortonMessages.OMSPRESTEYTAYLORETPMODEL_LICENSE;
-import static org.jgrasstools.hortonmachine.i18n.HortonMessages.OMSPRESTEYTAYLORETPMODEL_NAME;
-import static org.jgrasstools.hortonmachine.i18n.HortonMessages.OMSPRESTEYTAYLORETPMODEL_STATUS;
-import static org.jgrasstools.hortonmachine.i18n.HortonMessages.OMSPRESTEYTAYLORETPMODEL_UI;
-import static org.jgrasstools.hortonmachine.i18n.HortonMessages.OMSPRESTEYTAYLORETPMODEL_defaultPressure_DESCRIPTION;
-import static org.jgrasstools.hortonmachine.i18n.HortonMessages.OMSPRESTEYTAYLORETPMODEL_defaultTemp_DESCRIPTION;
-import static org.jgrasstools.hortonmachine.i18n.HortonMessages.OMSPRESTEYTAYLORETPMODEL_doHourly_DESCRIPTION;
-import static org.jgrasstools.hortonmachine.i18n.HortonMessages.OMSPRESTEYTAYLORETPMODEL_inNetradiation_DESCRIPTION;
-import static org.jgrasstools.hortonmachine.i18n.HortonMessages.OMSPRESTEYTAYLORETPMODEL_inPressure_DESCRIPTION;
-import static org.jgrasstools.hortonmachine.i18n.HortonMessages.OMSPRESTEYTAYLORETPMODEL_inTemp_DESCRIPTION;
-import static org.jgrasstools.hortonmachine.i18n.HortonMessages.OMSPRESTEYTAYLORETPMODEL_outPTEtp_DESCRIPTION;
-import static org.jgrasstools.hortonmachine.i18n.HortonMessages.OMSPRESTEYTAYLORETPMODEL_pAlpha_DESCRIPTION;
-import static org.jgrasstools.hortonmachine.i18n.HortonMessages.OMSPRESTEYTAYLORETPMODEL_pDailyDefaultNetradiation_DESCRIPTION;
-import static org.jgrasstools.hortonmachine.i18n.HortonMessages.OMSPRESTEYTAYLORETPMODEL_pGmorn_DESCRIPTION;
-import static org.jgrasstools.hortonmachine.i18n.HortonMessages.OMSPRESTEYTAYLORETPMODEL_pGnight_DESCRIPTION;
-import static org.jgrasstools.hortonmachine.i18n.HortonMessages.OMSPRESTEYTAYLORETPMODEL_pHourlyDefaultNetradiation_DESCRIPTION;
-import static org.jgrasstools.hortonmachine.i18n.HortonMessages.OMSPRESTEYTAYLORETPMODEL_time_DESCRIPTION;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -161,26 +138,26 @@ public class OmsLinearReservoir extends JGTModel{
 			FirstOrderIntegrator dp853 = new DormandPrince853Integrator(1.0e-8,1000.0, 1.0e-10, 1.0e-10);
 			FirstOrderDifferentialEquations ode = new EquazioneDifferenziale(a, b, J,ET);
 			// condizioni iniziali e finali
-			double[] y = new double[] { integralS, 10000.0 };
+			double[] y = new double[] { S, 10000.0 };
 			int t=t1+1;
 			t1=t;		
 			dp853.integrate(ode, 0.0, y, t, y);
 			S=y[0];
-			integralS=integralS1+S;
-			integralS1=integralS;
 			
 			Q = a * (Math.pow(S, b));
 			integralp=integralp1+(Q+ET)/S;
 			integralp1=integralp;
-			integralt=integralt1+Q/S*integralp;
-			integralt1=integralt;
+			
 			
 			p = Math.exp(-integralp);
+			integralt=integralt1+Q/S*p;
+			integralt1=integralt;
+			
 			System.out.print(Q+ "\t");	
 			theta = integralt;
 			pT = Q / (theta * S) * p;
 			pET = ET / ((1-theta) * S) * p;
-			Qout=integralj1+J*p;
+			Qout=integralj1+J*pT*theta;
 			integralj1=Qout;
 			System.out.print(Qout+ "\t");
 		

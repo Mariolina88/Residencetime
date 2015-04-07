@@ -21,15 +21,15 @@ public class testCaseLinearResoirvoir extends HMTestCase {
 		//l.pPathtoMeas = "/Users/giuseppeformetta/Desktop/MarialauraWork/LWRB/data/Downwellingm_CLEAR";
 		
 		//l.pDoReadMeas = true;
-		l.inPathToPrec = "/Users/marialaura/Desktop/Precipitazione.csv";
-		l.inPathToDischarge = "/Users/marialaura/Desktop/Q.csv";
-		l.inPathToET ="/Users/marialaura/Desktop/ET.csv";
+		l.inPathToPrec = "/Users/marialaura/Desktop/rainfall.csv";
+		l.inPathToDischarge = "/Users/marialaura/Desktop/rainfall.csv";
+		l.inPathToET ="/Users/marialaura/Desktop/rainfall.csv";
 		
 		l.pathToQout= "/Users/marialaura/Desktop/ProvaOUT.csv";
 		l.inTimestep = 60;
 
-		l.tStartDate = "2010-01-01 00:00";
-		l.tEndDate = "2010-01-01 13:00";
+		l.tStartDate = "1994-01-01 00:00";
+		l.tEndDate = "1994-01-01 13:00";
 		l.id=8;
 
 		l.process();
