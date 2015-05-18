@@ -195,9 +195,6 @@
 	<classpathentry kind="lib" path="/Users/marialaura/Desktop/dottorato/java/opencsv-3.2.jar"/>
 	<classpathentry kind="lib" path="/Users/marialaura/Desktop/dottorato/java/javacsv.jar"/>
 	<classpathentry kind="lib" path="/Users/marialaura/Desktop/dottorato/java/junit-4.12.jar" sourcepath="/Users/marialaura/.m2/repository/junit/junit/4.12/junit-4.12-sources.jar"/>
-	<classpathentry kind="lib" path="/Users/marialaura/Downloads/jgrasstools-0/jgt-jgrassgears-0.7.7-SNAPSHOT.jar" sourcepath="/Users/marialaura/Downloads/jgrasstools-0/jgt-jgrassgears-0.7.7-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="/Users/marialaura/Downloads/jgrasstools-0/jgt-hortonmachine-0.7.7-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="/Users/marialaura/Downloads/jgrasstools-0/jgt-modules-0.7.7-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="/Users/marialaura/Downloads/joda-time-2.4/joda-time-2.4-sources.jar"/>
 	<classpathentry kind="lib" path="/Users/marialaura/Downloads/joda-time-2.4/joda-time-2.4-javadoc.jar"/>
 	<classpathentry kind="lib" path="/Users/marialaura/Downloads/joda-time-2.4/joda-time-2.4.jar" sourcepath="/Users/marialaura/.m2/repository/joda-time/joda-time/2.4/joda-time-2.4-sources.jar"/>
@@ -389,5 +386,8 @@
 	<classpathentry kind="lib" path="/Users/marialaura/Downloads/geotools-12-2.2/vecmath-1.3.2.jar"/>
 	<classpathentry kind="lib" path="/Users/marialaura/Downloads/geotools-12-2.2/gt-sample-data-12.2.jar"/>
 	<classpathentry kind="lib" path="/Users/marialaura/Downloads/geotools-12-2.2/jai_core-1.1.3.jar"/>
+	<classpathentry kind="lib" path="/Users/marialaura/Downloads/jgrasstools-0/jgt-hortonmachine-0.7.7-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="/Users/marialaura/Downloads/jgrasstools-0/jgt-jgrassgears-0.7.7-SNAPSHOT.jar" sourcepath="/Users/marialaura/Downloads/jgrasstools-0/jgt-jgrassgears-0.7.7-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="/Users/marialaura/Downloads/jgrasstools-0/jgt-modules-0.7.7-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,15 +1,11 @@
 package marialaura.residencetime.test;
 
-import java.io.File;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.HashMap;
 
-import org.geotools.data.DataUtilities;
+import java.net.URISyntaxException;
+import java.util.HashMap;
 import org.jgrasstools.gears.io.timedependent.OmsTimeSeriesIteratorReader;
 import org.jgrasstools.gears.io.timedependent.OmsTimeSeriesIteratorWriter;
 import org.jgrasstools.gears.libs.monitor.PrintStreamProgressMonitor;
-import org.jgrasstools.gears.utils.math.NumericsUtilities;
 
 import linear.reservoir.*;
 
@@ -19,8 +15,8 @@ public class TestWaterBudget extends HMTestCase{
 
 	public void testLinear() throws Exception {
 
-		String startDate = "1995-01-01 00:00";
-		String endDate = "1996-01-01 00:00";
+		String startDate = "1994-01-01 00:00";
+		String endDate = "1999-01-01 00:00";
 		int timeStepMinutes = 60;
 		String fId = "ID";
 
@@ -29,14 +25,14 @@ public class TestWaterBudget extends HMTestCase{
 		String inPathToPrec = "/Users/marialaura/Desktop/dottorato/Idrologia/dati/rainfall.csv";
 		String inPathToDischarge = "/Users/marialaura/Desktop/dottorato/Idrologia/dati/Q.csv";
 		String inPathToET ="/Users/marialaura/Desktop/dottorato/Idrologia/dati/ET.csv";
-		String pathToQout= "/Users/marialaura/Desktop/OUTmode1_S.csv";
+		String pathToS= "/Users/marialaura/Desktop/OUTmode3_a06_b08.csv";
 
 		OmsTimeSeriesIteratorReader precipitationReader = getTimeseriesReader(inPathToPrec, fId, startDate, endDate, timeStepMinutes);
 		OmsTimeSeriesIteratorReader dischargeReader = getTimeseriesReader(inPathToDischarge, fId, startDate, endDate, timeStepMinutes);
 		OmsTimeSeriesIteratorReader ETReader = getTimeseriesReader(inPathToET, fId, startDate, endDate, timeStepMinutes);
 		OmsTimeSeriesIteratorWriter writer = new OmsTimeSeriesIteratorWriter();
 
-		writer.file = pathToQout;
+		writer.file = pathToS;
 		writer.tStart = startDate;
 		writer.tTimestep = timeStepMinutes;
 		writer.fileNovalue="-9999";
@@ -46,7 +42,10 @@ public class TestWaterBudget extends HMTestCase{
 
 		while( precipitationReader.doProcess ) {
 		
-			waterBudget.mode=2;
+			waterBudget.mode=3;
+			waterBudget.A=115.4708483;
+			waterBudget.a=0.6;
+			waterBudget.b=0.3;
 			precipitationReader.nextRecord();
 
 			HashMap<Integer, double[]> id2ValueMap = precipitationReader.outData;
@@ -68,7 +67,7 @@ public class TestWaterBudget extends HMTestCase{
 			writer.inData = outHM;
 			writer.writeNextLine();
 			
-			if (pathToQout != null) {
+			if (pathToS != null) {
 				writer.close();
 			}
             
@@ -89,9 +88,9 @@ public class TestWaterBudget extends HMTestCase{
 		OmsTimeSeriesIteratorReader reader = new OmsTimeSeriesIteratorReader();
 		reader.file = inPath;
 		reader.idfield = "ID";
-		reader.tStart = "1995-01-01 00:00";
+		reader.tStart = "1994-01-01 00:00";
 		reader.tTimestep = 60;
-		reader.tEnd = "1996-01-01 00:00";
+		reader.tEnd = "1999-01-01 00:00";
 		reader.fileNovalue = "-9999";
 		reader.initProcess();
 		return reader;

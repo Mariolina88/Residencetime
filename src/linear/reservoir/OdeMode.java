@@ -1,15 +1,18 @@
 package linear.reservoir;
 
 public class OdeMode implements Strategy {
-	public int t; 
+	public double t;
+	
 
 	@Override
-	public int checkMode(int mode) {
+	public double checkMode(int mode, double a) {
 		if (mode == 1) {
-			t=1;
+			t=0.0001;
+			
 		}
 		if (mode==2){
-			t=10000;
+			t=a/1000;
+			
 		}
 		return t; 
 	}
