@@ -1,8 +1,8 @@
 package linear.reservoir;
-
 import static org.jgrasstools.gears.libs.modules.JGTConstants.isNovalue;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -16,83 +16,108 @@ import org.jgrasstools.gears.libs.modules.JGTModel;
 
 import java.io.IOException;
 
-public class Array {
+
+public class InputDataP {
+
 	
 	@Description("Input Precipitation")
 	@In
 	public HashMap<Integer, double[]> inPrecipvalues;
+	double precipitation;
 
 	@Description("Input ET")
 	@In
 	public HashMap<Integer, double[]> inETvalues;
+	double ET;
 
 	@Description("InputDischarge")
 	@In
 	public HashMap<Integer, double[]> inDischargevalues;
+	
+	double discharge;
 
 	@Description("InputWaterStorage")
 	@In
 	public HashMap<Integer, double[]> inWaterStoragevalues;
-
-	public double A;
-
-	@Description("The matrix of output discharge")
-	@Out
-	public HashMap<Integer, double[]> outHMQout;
-
-	int i=-1;
+	double S;
 	
-	public Array(HashMap<Integer, double[]> inPrecipvalues,HashMap<Integer, double[]> inETvalues,
-			HashMap<Integer, double[]> inDischargevalues,HashMap<Integer, double[]> inWaterStoragevalues){
-		
-		ArrayList v=new ArrayList();
+	
+	@Description("Input p")
+	@In
+	public HashMap<Integer, double[]> inPvalues;
+	double p;
+	
+	
 
+
+
+	public InputDataP (HashMap<Integer, double[]> inPrecipvalues, HashMap<Integer, double[]> inETvalues, 
+			HashMap<Integer, double[]> inDischargevalues,HashMap<Integer, double[]> inWaterStoragevalues,
+			HashMap<Integer, double[]> inPvalues){
+		
 		Set<Entry<Integer, double[]>> entrySet = inPrecipvalues.entrySet();
+
 		for( Entry<Integer, double[]> entry : entrySet ) {
 			
 			Integer basinId = entry.getKey();
+
 			
-			double precipitation = entry.getValue()[0];	
+			precipitation = entry.getValue()[0];	
 			if (isNovalue(precipitation)) {
 				precipitation = 0;
-			} 
-
-			v.add(precipitation);
+			} 	
 			
-			double discharge =inDischargevalues.get(basinId)[0];
-			if (isNovalue(discharge)) {
-				discharge= 0;
-			} else {
-				discharge = inDischargevalues.get(basinId)[0];
-			}
-			v.add(discharge/116*3.6);
-				
-			
-			double ET = inETvalues.get(basinId)[0];
+			ET = inETvalues.get(basinId)[0];
 			if (isNovalue(ET)) {
 				ET= 0;
 			} else {
 				ET = inETvalues.get(basinId)[0];
 			}
-			v.add(ET);
 			
-			double S = inWaterStoragevalues.get(basinId)[0];
+			discharge =inDischargevalues.get(basinId)[0];
+			if (isNovalue(discharge)) {
+				discharge= 0;
+			} else {
+				discharge = inDischargevalues.get(basinId)[0];
+			}
+			
+			S= inWaterStoragevalues.get(basinId)[0];
 			if (isNovalue(S)) {
 				S= 0;
 			} else {
 				S = inWaterStoragevalues.get(basinId)[0];
 			}
-			v.add(S);
 			
-			System.out.println(v);		
+			p= inPvalues.get(basinId)[0];
+			if (isNovalue(p)) {
+				p= 0;
+			} else {
+				p = inPvalues.get(basinId)[0];
+			}
+		}
+	}
 		
+	 
+	 public double getJ(){
+	       return this.precipitation; 
+	    }
+	 
+	 public double getET(){
+	       return this.ET; 
+	    }
+	
+	 public double getQ(){
+	       return this.discharge; 
+	    }
+	 
+	 public double getWS(){
+	       return this.S; 
+	    }
+	 
+	 public double getp(){
+	       return this.p; 
+	    }
 	}
-	
-	
-	
-	
-	}
-	
 	
 
-}
+

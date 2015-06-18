@@ -3,15 +3,17 @@ package linear.reservoir;
 public class Context {
 	int mode;
 	double a;
-	Strategy strategy;
+	double b;
+	StrategyTheta strategy;
 
-	public Context(int mode, double a, Strategy strategy) {
+	public Context(int mode, double a,double b, StrategyTheta strategy) {
 		this.a=a;
+		this.b=b;
 		this.mode = mode;
 		this.strategy = strategy;
 	}
 
-	public void setStrategy(Strategy strategy) {
+	public void setStrategy(StrategyTheta strategy) {
 		this.strategy = strategy;
 	}
 
@@ -20,7 +22,7 @@ public class Context {
 	}
 
 	public double getResultTime() {
-		return strategy.checkMode(mode,a);
+		return strategy.checkMode(mode,a,b,c);
 	}
 	
 

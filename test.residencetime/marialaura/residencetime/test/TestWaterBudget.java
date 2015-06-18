@@ -25,17 +25,24 @@ public class TestWaterBudget extends HMTestCase{
 		String inPathToPrec = "/Users/marialaura/Desktop/dottorato/Idrologia/dati/rainfall.csv";
 		String inPathToDischarge = "/Users/marialaura/Desktop/dottorato/Idrologia/dati/Q.csv";
 		String inPathToET ="/Users/marialaura/Desktop/dottorato/Idrologia/dati/ET.csv";
-		String pathToS= "/Users/marialaura/Desktop/OUTmode3_a06_b08.csv";
+		String pathToS= "/Users/marialaura/Desktop/S_mode3.csv";
+		String pathToQ= "/Users/marialaura/Desktop/Q_mode3.csv";
 
 		OmsTimeSeriesIteratorReader precipitationReader = getTimeseriesReader(inPathToPrec, fId, startDate, endDate, timeStepMinutes);
 		OmsTimeSeriesIteratorReader dischargeReader = getTimeseriesReader(inPathToDischarge, fId, startDate, endDate, timeStepMinutes);
 		OmsTimeSeriesIteratorReader ETReader = getTimeseriesReader(inPathToET, fId, startDate, endDate, timeStepMinutes);
-		OmsTimeSeriesIteratorWriter writer = new OmsTimeSeriesIteratorWriter();
+		OmsTimeSeriesIteratorWriter writerS = new OmsTimeSeriesIteratorWriter();
+		OmsTimeSeriesIteratorWriter writerQ = new OmsTimeSeriesIteratorWriter();
 
-		writer.file = pathToS;
-		writer.tStart = startDate;
-		writer.tTimestep = timeStepMinutes;
-		writer.fileNovalue="-9999";
+		writerS.file = pathToS;
+		writerS.tStart = startDate;
+		writerS.tTimestep = timeStepMinutes;
+		writerS.fileNovalue="-9999";
+		
+		writerQ.file = pathToQ;
+		writerQ.tStart = startDate;
+		writerQ.tTimestep = timeStepMinutes;
+		writerQ.fileNovalue="-9999";
 		
 		WaterBudget waterBudget= new WaterBudget();
 
@@ -44,8 +51,10 @@ public class TestWaterBudget extends HMTestCase{
 		
 			waterBudget.mode=3;
 			waterBudget.A=115.4708483;
-			waterBudget.a=0.6;
-			waterBudget.b=0.3;
+			waterBudget.a=0.68;
+			waterBudget.b=1.5;
+			waterBudget.nZ=0.8;
+			
 			precipitationReader.nextRecord();
 
 			HashMap<Integer, double[]> id2ValueMap = precipitationReader.outData;
@@ -62,13 +71,21 @@ public class TestWaterBudget extends HMTestCase{
             waterBudget.pm = pm;
             waterBudget.process();
             
-            HashMap<Integer, double[]> outHM = waterBudget.outHMQout;
+            HashMap<Integer, double[]> outHM = waterBudget.outHMSout;
+            HashMap<Integer, double[]> outHMQ = waterBudget.outHMQout;
             
-			writer.inData = outHM;
-			writer.writeNextLine();
+			writerS.inData = outHM;
+			writerS.writeNextLine();
 			
 			if (pathToS != null) {
-				writer.close();
+				writerS.close();
+			}
+			
+			writerQ.inData = outHMQ;
+			writerQ.writeNextLine();
+			
+			if (pathToS != null) {
+				writerQ.close();
 			}
             
             //double value = outHM.get(8)[0];

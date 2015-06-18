@@ -11,25 +11,23 @@ public class EquazioneDifferenzialeMode implements FirstOrderDifferentialEquatio
 	public static double a;
 	public static double A;
 	public static double b;
+	public static double nZ;
 	public static double S;
 	public static double Q;
 	public static double J;
 	public static double ET;
 	public static int mode;
 
-	public EquazioneDifferenzialeMode(double a, double b,double A, double J,double ET, double Q, int mode,double S) {
+	public EquazioneDifferenzialeMode(double a, double b,double nZ,double A, double J,double ET, double Q, int mode,double S) {
 		this.a=a;
 		this.b=b;
+		this.nZ=nZ;
 		this.J=J;
 		this.ET=ET;
 		this.Q=Q;
-		
 		this.mode=mode;
 		this.A=A;
-		this.S=S;
-		
-		
-		
+		this.S=S;	
 	}
 
 	public int getDimension() {
@@ -37,6 +35,11 @@ public class EquazioneDifferenzialeMode implements FirstOrderDifferentialEquatio
 	}
 	public void computeDerivatives(double t, double[] y, double[] yDot)
 			throws MaxCountExceededException, DimensionMismatchException {
+		//STAI ATTENTA A QUESTA CONDIZIONE
+		if (ET>S){
+			ET=0;
+		}
+		
 		
 		if (mode==1){
 			//3.6 is to convert m3/s in mm
@@ -47,18 +50,9 @@ public class EquazioneDifferenzialeMode implements FirstOrderDifferentialEquatio
 	     }
 		
 		if (mode==3){
-			yDot[0]=J-a*S-b*J;
+			yDot[0]=1/nZ*(J-a*Math.pow(S, b)-ET);
 		     }
-		
-		/*if (mode==2 & ET<S){
-			yDot[0]=J-a*S-ET;
-		}else {
-			yDot[0]=J-a*S;
-		}
-		*/
+
 	
 	}
 }
-
-
-
