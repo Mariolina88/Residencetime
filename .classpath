@@ -389,5 +389,9 @@
 	<classpathentry kind="lib" path="/Users/marialaura/Downloads/jgrasstools-0/jgt-hortonmachine-0.7.7-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="/Users/marialaura/Downloads/jgrasstools-0/jgt-jgrassgears-0.7.7-SNAPSHOT.jar" sourcepath="/Users/marialaura/Downloads/jgrasstools-0/jgt-jgrassgears-0.7.7-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="/Users/marialaura/Downloads/jgrasstools-0/jgt-modules-0.7.7-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="/Users/marialaura/Downloads/colt/lib/colt.jar"/>
+	<classpathentry kind="lib" path="/Users/marialaura/Downloads/colt/lib/concurrent.jar"/>
+	<classpathentry kind="lib" path="/Users/marialaura/Downloads/colt-1.2.0.jar"/>
+	<classpathentry kind="lib" path="/Users/marialaura/Downloads/parallelcolt-0.10.1-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

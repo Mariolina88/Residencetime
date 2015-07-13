@@ -12,12 +12,12 @@ import linear.reservoir.*;
 
 import org.jgrasstools.hortonmachine.utils.HMTestCase;
 
-public class TestWaterBudget2 extends HMTestCase{
+public class TestWaterBudget3 extends HMTestCase{
 
 	public void testLinear() throws Exception {
 
 		String startDate = "1994-01-01 00:00";
-		String endDate = "1994-01-01 2:00";
+		String endDate = "1994-01-02 00:00";
 		int timeStepMinutes = 60;
 		String fId = "ID";
 
@@ -45,7 +45,7 @@ public class TestWaterBudget2 extends HMTestCase{
 		writerQ.tTimestep = timeStepMinutes;
 		writerQ.fileNovalue="-9999";
 		
-		WaterBudget2 waterBudget= new WaterBudget2();
+		WaterBudget3 waterBudget= new WaterBudget3();
 
 
 		while( precipitationReader.doProcess ) {

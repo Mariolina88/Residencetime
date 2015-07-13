@@ -1,9 +1,12 @@
 package linear.reservoir;
 
+import static org.jgrasstools.gears.libs.modules.JGTConstants.isNovalue;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.Set;
 
-
+import linear.reservoir.*;
 import oms3.annotations.Description;
 import oms3.annotations.Execute;
 import oms3.annotations.In;
@@ -22,7 +25,7 @@ import org.apache.commons.math3.ode.*;
 import org.apache.commons.math3.ode.nonstiff.*;
 
 
-public class WaterBudget2 extends JGTModel{
+public class WaterBudget3 extends JGTModel{
 
 	@Description("Precipitation")
 	@In
@@ -112,7 +115,6 @@ public class WaterBudget2 extends JGTModel{
 	int t=0;
 	DateTime StartDate_t;
 	DateTime startDate;
-	int endStore;
 
 
 	@Execute
@@ -120,12 +122,11 @@ public class WaterBudget2 extends JGTModel{
 		DateTime start = formatter.parseDateTime(tStartDate);
 		DateTime end = formatter.parseDateTime(tEndDate);
 		dim=Hours.hoursBetween(start, end).getHours()+1;
-
-		double []WS=new double[dim-t_i];
-		double []QS=new double[dim-t_i];
+		double[] []resultS = new double[dim][dim];
+		double[][] resultQ = new double[dim][dim];
 		startDate = formatter.parseDateTime(tStartDate);
 
-		
+
 		for (t=0;t<dim-t_i;t++){
 			StartDate_ti=startDate.plusHours(t_i);	
 			StartDate_t=StartDate_ti.plusHours(t);
@@ -136,25 +137,18 @@ public class WaterBudget2 extends JGTModel{
 			ET=dataInput.ET;
 			Storage= compute(J,Q,ET);
 			dischargeQ= computeQ(mode,S,Q);
-			
-			WS[t]=Storage;
-			QS[t]=dischargeQ;
-			endStore=dim-t_i;
+			resultS[t_i][t_i+t]=Storage;
+			resultQ[t_i][t_i+t]=dischargeQ;
 		}
 
 		t=0;
-		S_i=0;
-
-		storeResult(endStore,WS,QS);
 		t_i=t_i+1;
-		
-		if (t_i==dim){
-			double []fin=new double[dim];
-			endStore=dim;
-			storeResult(endStore,fin,fin);
-			
+		S_i=0;
+		if(t_i>dim-1){
+			System.exit(0);
 		}
-			
+
+		storeResult(dim,t,t_i,resultS,resultQ);
 
 
 	}
@@ -199,15 +193,14 @@ public class WaterBudget2 extends JGTModel{
 
 	}
 
-	private void storeResult(int endStore,double[] WS,double[]QS) throws SchemaException {
+	private void storeResult(int dim,int t,int t_i,double[][] resultS,double[][] resultQ) throws SchemaException {
 		outHMSout = new HashMap<Integer, double[]>();
 		outHMQout = new HashMap<Integer, double[]>();
-		for (int k=0;k<endStore;k++){
-			outHMSout.put(k, new double[]{WS[k]});
-			outHMQout.put(k, new double[]{QS[k]});
 
+		for (int k=0;k<dim-1;k++){
+			outHMSout.put(k, new double[]{resultS[t_i-1][k]});
+			outHMQout.put(k, new double[]{resultQ[t_i-1][k]});
 		}
 
 	}
 }
-
