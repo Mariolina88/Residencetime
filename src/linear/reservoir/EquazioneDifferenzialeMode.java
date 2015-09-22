@@ -36,22 +36,10 @@ public class EquazioneDifferenzialeMode implements FirstOrderDifferentialEquatio
 	public void computeDerivatives(double t, double[] y, double[] yDot)
 			throws MaxCountExceededException, DimensionMismatchException {
 		//STAI ATTENTA A QUESTA CONDIZIONE
-		if (ET>S){
-			ET=0;
-		}
+		if (ET>S) ET=0;
+					
+		yDot[0] = (mode==0) ? 1/nZ*(J-a*Math.pow(S, b)-ET) : J-Q/A*3.6-ET;
 		
-		
-		if (mode==1){
-			//3.6 is to convert m3/s in mm
-			yDot[0]=J-Q/A*3.6-ET;
-		}
-		if (mode==2){
-		yDot[0]=J-a*S-ET;
-	     }
-		
-		if (mode==3){
-			yDot[0]=1/nZ*(J-a*Math.pow(S, b)-ET);
-		     }
 
 	
 	}

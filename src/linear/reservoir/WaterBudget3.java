@@ -13,6 +13,7 @@ import oms3.annotations.In;
 import oms3.annotations.Out;
 
 import org.geotools.feature.SchemaException;
+import org.jgrasstools.gears.io.timedependent.OmsTimeSeriesIteratorWriter;
 import org.jgrasstools.gears.libs.modules.JGTConstants;
 import org.jgrasstools.gears.libs.modules.JGTModel;
 import org.joda.time.DateTime;
@@ -27,40 +28,44 @@ import org.apache.commons.math3.ode.nonstiff.*;
 
 public class WaterBudget3 extends JGTModel{
 
+	double J;	
 	@Description("Precipitation")
 	@In
-	public static double J;
 	public String pathToPrec;
 
+	double Q;
 	@Description("Discharge")
 	@In
-	public static double Q;
 	public String pathToDischarge;
 
+	double ET;
 	@Description("ET")
 	@In
-	public static double ET;
 	public String pathToET;
 	
+	@Description("Input Precipitation")
+	@In
+	public HashMap<Integer, double[]> inTimevalues;
+
 	@Description("First date of the simulation")
 	@In
 	public String tStartDate;
-	
+
 	@Description("Last date of the simulation")
 	@In
 	public String tEndDate;
-	
+
 	@Description("time step of the simulation")
 	@In
 	public int inTimestep;
-	
+
 	@Description("Station ID")
 	@In
 	public int ID;
 
 	@Description("Integration time")
 	@In
-	public static double time ;
+	public static double dt ;
 
 	@Description("Area of the basin")
 	@In
@@ -79,16 +84,17 @@ public class WaterBudget3 extends JGTModel{
 	public static double nZ;
 
 
-	@Description("mode 1: J, Q and ET are external values, "
-			+ "mode=2 Q is simualted withe the Linear Reservoir"
-			+ "mode=3 Non-linear reservoir ")
+	@Description("mode 0:NonLinearReservoir, "
+			+ "else:J, Q and ET are external values ")
 	@In
-	public int mode;
+	public String mode;
+	
+	int modeInt;
 
 	@Description("Water storage")
 	@Out
 	public static double S;
-	
+
 	@Description("soil moisture")
 	@Out
 	public static double S_i;
@@ -97,19 +103,24 @@ public class WaterBudget3 extends JGTModel{
 	@Description("The matrix of output S")
 	@Out
 	public HashMap<Integer, double[]> outHMSout;
+
 	double Storage;
 
 	@Description("The matrix of output discharge")
 	@Out
 	public HashMap<Integer, double[]> outHMQout;
+	
+	@Description("The matrix of output ET")
+	@Out
+	public HashMap<Integer, double[]> outHMETout;
+
 	double dischargeQ;
-	
+
 	private DateTimeFormatter formatter = JGTConstants.utcDateFormatterYYYYMMDDHHMM;
-	
+
 	//dimension of the output matrix 
 	int dim;
 	//injection time
-	int t_i=0;
 	DateTime StartDate_ti;
 	//time
 	int t=0;
@@ -119,87 +130,91 @@ public class WaterBudget3 extends JGTModel{
 
 	@Execute
 	public void process() throws Exception {
+		modeInt=mode.indexOf("Non");
+		
 		DateTime start = formatter.parseDateTime(tStartDate);
 		DateTime end = formatter.parseDateTime(tEndDate);
 		dim=Hours.hoursBetween(start, end).getHours()+1;
-		double[] []resultS = new double[dim][dim];
-		double[][] resultQ = new double[dim][dim];
+		double[] resultS = new double[dim];
+		double[] resultQ = new double[dim];
+
 		startDate = formatter.parseDateTime(tStartDate);
 
+		Set<Entry<Integer, double[]>> entrySet = inTimevalues.entrySet();
+		for( Entry<Integer, double[]> entry : entrySet ) {
 
-		for (t=0;t<dim-t_i;t++){
-			StartDate_ti=startDate.plusHours(t_i);	
-			StartDate_t=StartDate_ti.plusHours(t);
-			String StartDate=StartDate_t.toString(formatter);		
-			InputWB dataInput=new InputWB(pathToPrec,pathToDischarge,pathToET,StartDate,tEndDate,inTimestep,ID);
-			J=dataInput.precipitation;
-			Q=dataInput.discharge;
-			ET=dataInput.ET;
-			Storage= compute(J,Q,ET);
-			dischargeQ= computeQ(mode,S,Q);
-			resultS[t_i][t_i+t]=Storage;
-			resultQ[t_i][t_i+t]=dischargeQ;
+
+			double ti = entry.getValue()[0];
+
+			
+			int t_i=(int) ti;
+
+
+			for (t=0;t<dim-t_i;t++){
+				StartDate_ti=startDate.plusHours(t_i);	
+				StartDate_t=StartDate_ti.plusHours(t);
+				String StartDate=StartDate_t.toString(formatter);		
+				InputWB dataInput=new InputWB(pathToPrec,pathToDischarge,pathToET,StartDate,tEndDate,inTimestep,ID);
+				J=dataInput.precipitation;
+				Q=dataInput.discharge;
+				ET=dataInput.ET;
+				Storage= compute(J,Q,ET);
+				dischargeQ= computeQ(modeInt,S,Q);
+				resultS[t_i+t]=Storage;
+				resultQ[t_i+t]=dischargeQ;
+
+			}
+
+			storeResult(dim,t,t_i,resultS,resultQ);
+			resultS = new double[dim];
+			resultQ = new double[dim];
+
+			S_i=0;
+
+
 		}
-
-		t=0;
-		t_i=t_i+1;
-		S_i=0;
-		if(t_i>dim-1){
-			System.exit(0);
-		}
-
-		storeResult(dim,t,t_i,resultS,resultQ);
-
 
 	}
 
 	public double compute(double J, double Q, double ET) throws IOException {
-		time=a/1000;
+		dt=1E-4;
 
 		//FirstOrderIntegrator EI=new EulerIntegrator(1);
-		FirstOrderIntegrator dp853 = new DormandPrince853Integrator(1.0e-8,time, 1.0e-10, 1.0e-10);
-		FirstOrderDifferentialEquations ode = new EquazioneDifferenzialeMode(a, b,nZ,A,J,ET,Q,mode,S_i);
+		FirstOrderIntegrator dp853 = new DormandPrince853Integrator(1.0e-8,dt, 1.0e-10, 1.0e-10);
+		FirstOrderDifferentialEquations ode = new EquazioneDifferenzialeMode(a, b,nZ,A,J,ET,Q,modeInt,S_i);
 
 		// condizioni iniziali e finali
 		double[] y = new double[] { S_i, 0 };
 
 		//EI.integrate(ode, 0.0, y,  time, y);
-		dp853.integrate(ode, 0.0, y, time, y);
+		dp853.integrate(ode, 0.0, y, dt, y);
 
 		S_i=y[0];
-
 		S=S_i;
-		//System.out.println(S_i);
-		if (mode==3){
-			S=S_i*nZ;
-		}
+
+
+		if (modeInt==0) S=S_i*nZ;
+		if (S<0) S=0;
+		
 		System.out.println(S);
 		return S;
 	}
 
 
-	public double computeQ(int mode,double S,double Q) throws IOException {
-		if (mode==1){
-			Q=Q/A*3.6;
-		}
-		if (mode==2){
-			Q=a*S;
-		}
-
-		if (mode==3){
-			Q=a*Math.pow(S, b);
-		}
+	public double computeQ(int modeInt,double S,double Q) throws IOException {
+		Q = (modeInt==0) ? a*Math.pow(S, b) : Q/A*3.6;	
 		return Q;
 
 	}
 
-	private void storeResult(int dim,int t,int t_i,double[][] resultS,double[][] resultQ) throws SchemaException {
+	private void storeResult(int dim,int t,int t_i,double[]resultS,double[]resultQ) throws SchemaException, IOException {
 		outHMSout = new HashMap<Integer, double[]>();
 		outHMQout = new HashMap<Integer, double[]>();
 
-		for (int k=0;k<dim-1;k++){
-			outHMSout.put(k, new double[]{resultS[t_i-1][k]});
-			outHMQout.put(k, new double[]{resultQ[t_i-1][k]});
+		for (int k=0;k<dim;k++){
+			outHMSout.put(k, new double[]{resultS[k]});
+			outHMQout.put(k, new double[]{resultQ[k]});
+
 		}
 
 	}

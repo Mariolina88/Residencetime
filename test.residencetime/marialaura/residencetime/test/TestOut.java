@@ -6,6 +6,7 @@ import java.util.HashMap;
 import org.jgrasstools.gears.io.timedependent.OmsTimeSeriesIteratorReader;
 import org.jgrasstools.gears.io.timedependent.OmsTimeSeriesIteratorWriter;
 import org.jgrasstools.gears.libs.monitor.PrintStreamProgressMonitor;
+import linear.reservoir.Reader;
 
 import linear.reservoir.*;
 
@@ -22,19 +23,15 @@ public class TestOut extends HMTestCase{
 
 		PrintStreamProgressMonitor pm = new PrintStreamProgressMonitor(System.out, System.out);
 
-		String inPathToPrec = "/Users/marialaura/Desktop/dottorato/Idrologia/dati/rainfall.csv";
-		String inPathToTheta= "/Users/marialaura/Desktop/theta_prova.csv";
-		String inPathTopT= "/Users/marialaura/Desktop/pT_prova.csv";
-		String inPathTopET= "/Users/marialaura/Desktop/pET_prova.csv";
+		String inPathToTime = "/Users/marialaura/Desktop/dottorato/Idrologia/dati/time.csv";
 		String pathToQout= "/Users/marialaura/Desktop/QOUT_prova.csv";
 		String pathToETout= "/Users/marialaura/Desktop/ETOUT_prova.csv";
 		String pathToQ= "/Users/marialaura/Desktop/Qend_prova.csv";
 		String pathToET= "/Users/marialaura/Desktop/ETend_prova.csv";
 
-		OmsTimeSeriesIteratorReader precipitationReader = getTimeseriesReader(inPathToPrec, fId, startDate, endDate, timeStepMinutes);
-		OmsTimeSeriesIteratorReader pTReader = getTimeseriesReader(inPathTopT, fId, startDate, endDate, timeStepMinutes);
-		OmsTimeSeriesIteratorReader pETReader = getTimeseriesReader(inPathTopET, fId, startDate, endDate, timeStepMinutes);
-		OmsTimeSeriesIteratorReader ThetaReader = getTimeseriesReader(inPathToTheta, fId, startDate, endDate, timeStepMinutes);
+		Reader timeReader = getTimeseriesReader(inPathToTime, fId, startDate, endDate, timeStepMinutes);
+		Reader QoutReader = getTimeseriesReader(pathToQout, fId, startDate, endDate, timeStepMinutes);
+		Reader EtoutReader = getTimeseriesReader(pathToETout, fId, startDate, endDate, timeStepMinutes);
 		OmsTimeSeriesIteratorWriter writer_Qout = new OmsTimeSeriesIteratorWriter();
 		OmsTimeSeriesIteratorWriter writer_ETout = new OmsTimeSeriesIteratorWriter();
 		
@@ -49,23 +46,30 @@ public class TestOut extends HMTestCase{
 		writer_ETout.fileNovalue="-9999";
 
 		
-		OutOfTravelTimes pdfs= new OutOfTravelTimes();
+		OutOfTravelTimes2 pdfs= new OutOfTravelTimes2();
 
 
-		while( precipitationReader.doProcess ) {
+		while( timeReader.doProcess ) {
 		
-			precipitationReader.nextRecord();
+			timeReader.nextRecord();
 			pdfs.ID=1;
-			pdfs.pathToQout=pathToQout;
-			pdfs.pathToETout=pathToETout;
+
 
 
 			pdfs.tStartDate=startDate;
 			pdfs.tEndDate=endDate;
 	
 
+			HashMap<Integer, double[]> id2ValueMap = timeReader.outData;
+			pdfs.inTimevalues = id2ValueMap;
 
-
+			QoutReader.nextRecord();
+            id2ValueMap = QoutReader.outData;
+            pdfs.inQoutvalues= id2ValueMap;
+            
+            EtoutReader.nextRecord();
+            id2ValueMap = EtoutReader.outData;
+            pdfs.inEToutvalues= id2ValueMap;
 
             pdfs.pm = pm;
             pdfs.process();
@@ -92,19 +96,23 @@ public class TestOut extends HMTestCase{
             //break;
 		}
 		
-		precipitationReader.close();
+		timeReader.close();
+		QoutReader.close();
+		EtoutReader.close();
+		
+		
 
 	}
 
 
-	private OmsTimeSeriesIteratorReader getTimeseriesReader( String inPath, String id, String startDate, String endDate,
+	private Reader getTimeseriesReader( String inPath, String id, String startDate, String endDate,
 			int timeStepMinutes ) throws URISyntaxException {
-		OmsTimeSeriesIteratorReader reader = new OmsTimeSeriesIteratorReader();
+		Reader reader = new Reader();
 		reader.file = inPath;
 		reader.idfield = "ID";
 		reader.tStart = "1994-01-01 00:00";
 		reader.tTimestep = 60;
-		reader.tEnd = "1996-01-01 00:00";
+		reader.tEnd = "1994-01-02 00:00";
 		reader.fileNovalue = "-9999";
 		reader.initProcess();
 		return reader;

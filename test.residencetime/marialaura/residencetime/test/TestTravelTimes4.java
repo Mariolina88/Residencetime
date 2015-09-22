@@ -11,7 +11,7 @@ import linear.reservoir.*;
 
 import org.jgrasstools.hortonmachine.utils.HMTestCase;
 
-public class TestTravelTimes3 extends HMTestCase{
+public class TestTravelTimes4 extends HMTestCase{
 
 	public void testLinear() throws Exception {
 
@@ -35,6 +35,12 @@ public class TestTravelTimes3 extends HMTestCase{
 		String pathToETout= "/Users/marialaura/Desktop/ETOUT_prova.csv";
 
 		OmsTimeSeriesIteratorReader timeReader = getTimeseriesReader(inPathToTime, fId, startDate, endDate, timeStepMinutes);
+		OmsTimeSeriesIteratorReader precipitationReader = getTimeseriesReader(inPathToPrec, fId, startDate, endDate, timeStepMinutes);
+		OmsTimeSeriesIteratorReader dischargeReader = getTimeseriesReader(inPathToDischarge, fId, startDate, endDate, timeStepMinutes);
+		OmsTimeSeriesIteratorReader ETReader = getTimeseriesReader(inPathToET, fId, startDate, endDate, timeStepMinutes);
+		OmsTimeSeriesIteratorReader SReader = getTimeseriesReader(inPathToS, fId, startDate, endDate, timeStepMinutes);
+		OmsTimeSeriesIteratorReader pReader = getTimeseriesReader(inPathToP, fId, startDate, endDate, timeStepMinutes);
+		OmsTimeSeriesIteratorReader thetaReader = getTimeseriesReader(inPathToTheta, fId, startDate, endDate, timeStepMinutes);
 
 		OmsTimeSeriesIteratorWriter writer_pT = new OmsTimeSeriesIteratorWriter();
 		OmsTimeSeriesIteratorWriter writer_pET = new OmsTimeSeriesIteratorWriter();
@@ -62,7 +68,7 @@ public class TestTravelTimes3 extends HMTestCase{
 		writer_ETout.fileNovalue="-9999";
 
 		
-		TravelTimes3 pdfs= new TravelTimes3();
+		TravelTimes4 pdfs= new TravelTimes4();
 
 
 		while( timeReader.doProcess ) {
@@ -70,14 +76,9 @@ public class TestTravelTimes3 extends HMTestCase{
 			timeReader.nextRecord();
 			pdfs.ID=1;
 			pdfs.mode=2;
-			pdfs.theta_i=0.58;
+			pdfs.theta_i=0.5896090;
 
-			pdfs.pathToPrec=inPathToPrec;
-			pdfs.pathToS=inPathToS;
-			pdfs.pathToDischarge=inPathToDischarge;
-			pdfs.pathToET=inPathToET;
-			pdfs.pathToP=inPathToP;
-			pdfs.pathToTheta=inPathToTheta;
+
 			pdfs.tStartDate=startDate;
 			pdfs.tEndDate=endDate;
 	
@@ -85,6 +86,31 @@ public class TestTravelTimes3 extends HMTestCase{
 
 			HashMap<Integer, double[]> id2ValueMap = timeReader.outData;
 			pdfs.inTimevalues = id2ValueMap;
+			
+			precipitationReader.nextRecord();
+            id2ValueMap = precipitationReader.outData;
+            pdfs.inPrecipvalues = id2ValueMap;
+			
+			dischargeReader.nextRecord();
+            id2ValueMap = dischargeReader.outData;
+            pdfs.inDischargevalues = id2ValueMap;
+            
+            ETReader.nextRecord();
+            id2ValueMap = ETReader.outData;
+            pdfs.inETvalues = id2ValueMap;
+            
+            SReader.nextRecord();
+            id2ValueMap = SReader.outData;
+            pdfs.inWaterStoragevalues = id2ValueMap;
+            
+            pReader.nextRecord();
+            id2ValueMap = pReader.outData;
+            pdfs.inPvalues= id2ValueMap;
+            
+            thetaReader.nextRecord();
+            id2ValueMap = thetaReader.outData;
+            pdfs.inthetavalues = id2ValueMap;
+            
 		
 
             pdfs.pm = pm;
@@ -130,6 +156,12 @@ public class TestTravelTimes3 extends HMTestCase{
 		}
 		
 		timeReader.close();
+		precipitationReader.close();
+        dischargeReader.close();
+        ETReader.close();
+        SReader.close();
+        pReader.close();
+        thetaReader.close();
 
 	}
 
